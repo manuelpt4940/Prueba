@@ -7,10 +7,12 @@ import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.provider.SyncStateContract;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
-import android.view.MotionEvent;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -28,6 +30,7 @@ import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+    private static final String TAG = "";
     ////////
     String address = null;
     String deviceName = null;
@@ -39,9 +42,15 @@ public class MainActivity extends AppCompatActivity
     final UUID myUUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
 
     private ProgressDialog progress;
-    String readMessage;
+    String readMessage="";
+    String messageComplete="";
     private double last_x = 0;
     private double last_y = 0;
+
+    InputStream mmInputStream;
+    byte[] buffer = new byte[1024];
+    int bytes;
+
     ///////////
 
     @Override
@@ -121,20 +130,21 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void receive() throws IOException {
-        InputStream mmInputStream = btSocket.getInputStream();
-        byte[] buffer = new byte[256];
-        int bytes;
+        mmInputStream = btSocket.getInputStream();
+        readMessage="";
+        while((bytes = mmInputStream.read(buffer)) != -1) {
 
-        try {
-            bytes = mmInputStream.read(buffer);
+            //mHandler.obtainMessage(MESSAGE_READ, bytes, -1, buffer).sendToTarget();
             readMessage = new String(buffer, 0, bytes); //Se crea la variable global para poder acceder desde cualquier fragment
-            //Log.d(TAG, "Received: " + readMessage);
-            //TextView voltageLevel = (TextView) findViewById(R.id.Voltage);
-            //voltageLevel.setText("Voltage level\n" + "DC " + readMessage + " V");
-            //btSocket.close();
-        } catch (IOException e) {
-            //Log.e(TAG, "Problems occurred!");
-            return;
+            messageComplete = readMessage.trim();               //Quitamos todos los espacios al inicio del string
+            //System.out.println(testm);
+            if(messageComplete.length()!=10){                   //Se verifica que el total de datos sea el correcto
+                send("1");                                      //La información llegó incompleta
+            }
+            else {
+                send("0");                                      //La información llegó completa
+                break;
+            }
         }
     }
 
@@ -195,6 +205,7 @@ public class MainActivity extends AppCompatActivity
                 isBtConnected = true;
                 // start the connection monitor
                 new MainActivity.MonitorConnection().execute();
+                //new readData().execute();
             }
             progress.dismiss();
         }
@@ -210,6 +221,7 @@ public class MainActivity extends AppCompatActivity
                     // this was the only reliable way I found of monitoring the connection
                     // .isConnected didnt work
                     // BluetoothDevice.ACTION_ACL_DISCONNECTED didnt fire
+
                     btSocket.getInputStream().read();
                 } catch (IOException e) {
                     connectionLost = true;
@@ -235,6 +247,8 @@ public class MainActivity extends AppCompatActivity
             }
         }
     }
+
+
 
     /*@Override
     public void onBackPressed() {

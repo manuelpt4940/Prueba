@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -83,20 +84,26 @@ public class FInicio extends Fragment{
               {
                 // do the thing that takes a long time
                     ((MainActivity)getActivity()).send(data);
+                  try {
+                      ((MainActivity)getActivity()).receive();
+                  } catch (IOException e) {
+                      e.printStackTrace();
+                  }
 
-                    try {
-                        ((MainActivity)getActivity()).receive();
+                  //((MainActivity)getActivity()).new readData().execute();
 
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run()
                         {
-                          String Mess=((MainActivity)getActivity()).readMessage;  //Obtener una variable desde el Activity
-                          tv.setText(Mess);
-                          progressBar.dismiss();
+                          String Mess=((MainActivity)getActivity()).messageComplete;  //Obtener una variable desde el Activity
+
+                            Log.e(TAG,Mess);
+                            tv.setText(Mess);
+                            progressBar.dismiss();
+
+
                         }
                     });
               }
