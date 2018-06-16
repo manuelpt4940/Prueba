@@ -37,6 +37,7 @@ public class Devices extends AppCompatActivity {
 
         //if the device has bluetooth
         myBluetooth = BluetoothAdapter.getDefaultAdapter();
+        infoButton.setBackgroundResource(R.drawable.ic_menu_send); //Asignación de imagen
 
         if(myBluetooth == null) {
             Toast.makeText(getApplicationContext(), "Bluetooth Device Not Available", Toast.LENGTH_LONG).show();
@@ -53,9 +54,11 @@ public class Devices extends AppCompatActivity {
 
         infoButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                Uri uri = Uri.parse("https://bluedot.readthedocs.io");
-                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-                startActivity(intent);
+                pairedDevicesList();
+                Toast.makeText(getApplicationContext(), "List Refreshed", Toast.LENGTH_SHORT).show();
+                //Uri uri = Uri.parse("https://bluedot.readthedocs.io");
+                //Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                //startActivity(intent);
             }
         });
 
