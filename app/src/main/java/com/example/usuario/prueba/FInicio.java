@@ -55,7 +55,6 @@ public class FInicio extends Fragment{
         button.setOnClickListener(new View.OnClickListener(){
               @Override
               public void onClick(View v) {
-
                   Enviar("Hola","Enviando1");
 
               }
@@ -78,35 +77,45 @@ public class FInicio extends Fragment{
 
     public void Enviar(final String data, String title) {
         progressBar = ProgressDialog.show(getActivity(), title, "Please wait...");  //show a progress dialog
+
         new Thread(new Runnable() {
-              @Override
-              public void run()
-              {
+            String Mess;
+            @Override
+            public void run()
+            {
                 // do the thing that takes a long time
-                    ((MainActivity)getActivity()).send(data);
-                  try {
+                ((MainActivity)getActivity()).send(data);
+                Mess=((MainActivity)getActivity()).messageComplete;  //Obtener una variable desde el Activity
+                char tet = Mess.charAt(0);
+                Log.e(TAG,"tes"+tet);
+                while(tet != '0') {
+
+                    try {
+                        Mess = ((MainActivity) getActivity()).messageComplete;
+                    }catch (NullPointerException e){ //Necessary because when turn off the server BT, appear and NullPointerException
+
+                    }
+                    tet = Mess.charAt(0);
+
+                }
+                  /*try {
                       ((MainActivity)getActivity()).receive();
                   } catch (IOException e) {
                       e.printStackTrace();
-                  }
+                  }*/
 
-                  //((MainActivity)getActivity()).new readData().execute();
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run()
+                    {
 
+                        Log.e(TAG,"te1"+Mess);
+                        tv.setText(Mess);
+                        progressBar.dismiss();
 
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run()
-                        {
-                          String Mess=((MainActivity)getActivity()).messageComplete;  //Obtener una variable desde el Activity
-
-                            Log.e(TAG,Mess);
-                            tv.setText(Mess);
-                            progressBar.dismiss();
-
-
-                        }
-                    });
-              }
+                    }
+                });
+            }
         }).start();
     }
 }

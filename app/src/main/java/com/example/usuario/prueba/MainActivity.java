@@ -1,5 +1,6 @@
 package com.example.usuario.prueba;
 
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -26,26 +27,29 @@ import android.widget.Toast;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-    private static final String TAG = "";
+    private static final String TAG="BluetoothConenectionServ";
     ////////
     String address = null;
     String deviceName = null;
 
     BluetoothAdapter myBluetooth = null;
-    BluetoothSocket btSocket = null;
+    public BluetoothSocket btSocket = null;
+    public int dat;
     private boolean isBtConnected = false;
     private boolean connectionLost = false;
     final UUID myUUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
 
     private ProgressDialog progress;
-    String readMessage="";
-    String messageComplete="";
-    private double last_x = 0;
-    private double last_y = 0;
+    String readMessage=" ";
+    String messageComplete=" ";
+    BluetoothService mBluetoothService;
+
+
 
     InputStream mmInputStream;
     byte[] buffer = new byte[1024];
@@ -65,14 +69,17 @@ public class MainActivity extends AppCompatActivity
         address = newint.getStringExtra(Devices.EXTRA_ADDRESS);
 
 
+
         //TextView statusView = (TextView)findViewById(R.id.status);
         //Button prender = (Button)findViewById(R.id.prender);
 
         //final View roundButton = (View)findViewById(R.id.roundButton);
 
         //statusView.setText("Connecting to " + deviceName);
-
+        //mBluetoothService = new BluetoothService(btSocket);
         new ConnectBT().execute();
+
+
 
         //*********Agrega fragmento inicial **************/
 
@@ -102,24 +109,11 @@ public class MainActivity extends AppCompatActivity
 
 
 
-
-    public void  prenders(View v){
-        send(buildMessage("1",0.5,0.5));
-    }
-    public void  apagars(View v){
-        send(buildMessage("1",0,0));
-    }
-
-
-    private String buildMessage(String operation, double x, double y) {
-        return (operation + "," + String.valueOf(x) + "," + String.valueOf(y) + "\n");
-    }
-
-
     public void send(String message) {
         if (btSocket!=null) {
             try {
                 btSocket.getOutputStream().write(message.getBytes());
+
             } catch (IOException e) {
                 //  msg("Error : " + e.getMessage());
                 if(e.getMessage().contains("Broken pipe")) Disconnect();
@@ -127,27 +121,32 @@ public class MainActivity extends AppCompatActivity
         } else {
             //msg("Error : btSocket == null");
         }
+
     }
 
+    @SuppressLint("LongLogTag")
     public void receive() throws IOException {
         mmInputStream = btSocket.getInputStream();
         readMessage="";
+        //while((messageComplete.length()!=10)){
         while((bytes = mmInputStream.read(buffer)) != -1) {
-
-            //mHandler.obtainMessage(MESSAGE_READ, bytes, -1, buffer).sendToTarget();
             readMessage = new String(buffer, 0, bytes); //Se crea la variable global para poder acceder desde cualquier fragment
             messageComplete = readMessage.trim();               //Quitamos todos los espacios al inicio del string
-            //System.out.println(testm);
-            if(messageComplete.length()!=10){                   //Se verifica que el total de datos sea el correcto
-                send("1");                                      //La información llegó incompleta
+            Log.e(TAG,"recibido"+readMessage);
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+/*           if(messageComplete.length()!=10){                   //Se verifica que el total de datos sea el correcto
+                //send("1");                                      //La información llegó incompleta
             }
             else {
                 send("0");                                      //La información llegó completa
                 break;
-            }
+            }*/
         }
     }
-
 
     private void Disconnect() {
         if (btSocket!=null) {
@@ -158,6 +157,7 @@ public class MainActivity extends AppCompatActivity
                 //msg("Error");
             }
         }
+        Toast.makeText(getApplicationContext(),"Disconnected"+dat,Toast.LENGTH_LONG).show();
         Toast.makeText(getApplicationContext(),"Disconnected",Toast.LENGTH_LONG).show();
         finish();
     }
@@ -213,6 +213,7 @@ public class MainActivity extends AppCompatActivity
 
     private class MonitorConnection extends AsyncTask<Void, Void, Void> {
 
+        @SuppressLint("LongLogTag")
         @Override
         protected Void doInBackground(Void... devices) {
             while (!connectionLost) {
@@ -223,6 +224,8 @@ public class MainActivity extends AppCompatActivity
                     // BluetoothDevice.ACTION_ACL_DISCONNECTED didnt fire
 
                     btSocket.getInputStream().read();
+                    receive();
+
                 } catch (IOException e) {
                     connectionLost = true;
                 }
