@@ -77,6 +77,8 @@ public class FInicio extends Fragment{
 
     public void Enviar(final String data, String title) {
         progressBar = ProgressDialog.show(getActivity(), title, "Please wait...");  //show a progress dialog
+        progressBar.setCanceledOnTouchOutside(true);
+
 
         new Thread(new Runnable() {
             String Mess;
@@ -85,10 +87,19 @@ public class FInicio extends Fragment{
             {
                 // do the thing that takes a long time
                 ((MainActivity)getActivity()).send(data);
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 Mess=((MainActivity)getActivity()).messageComplete;  //Obtener una variable desde el Activity
                 char tet = Mess.charAt(0);
                 Log.e(TAG,"tes"+tet);
                 while(tet != '0') {
+                    if (!(progressBar.isShowing())){
+                        ((MainActivity)getActivity()).send("Cancel");
+                        break;
+                    }
 
                     try {
                         Mess = ((MainActivity) getActivity()).messageComplete;

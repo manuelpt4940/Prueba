@@ -47,7 +47,6 @@ public class MainActivity extends AppCompatActivity
     private ProgressDialog progress;
     String readMessage=" ";
     String messageComplete=" ";
-    BluetoothService mBluetoothService;
 
 
 
@@ -76,7 +75,6 @@ public class MainActivity extends AppCompatActivity
         //final View roundButton = (View)findViewById(R.id.roundButton);
 
         //statusView.setText("Connecting to " + deviceName);
-        //mBluetoothService = new BluetoothService(btSocket);
         new ConnectBT().execute();
 
 
