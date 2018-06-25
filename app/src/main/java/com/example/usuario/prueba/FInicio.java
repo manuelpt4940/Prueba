@@ -1,5 +1,6 @@
 package com.example.usuario.prueba;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -30,6 +31,7 @@ public class FInicio extends Fragment{
     Button button, button2;
     TextView tv;
     private ProgressDialog progressBar;
+    private AlertDialog.Builder alertDialog;
 
 
     @Override
@@ -50,6 +52,7 @@ public class FInicio extends Fragment{
 
         //progressBar = view.findViewById(R.id.progressBar);
         progressBar = new ProgressDialog(getActivity());
+        alertDialog = new AlertDialog.Builder(getActivity());
 
 
         button.setOnClickListener(new View.OnClickListener(){
@@ -98,6 +101,8 @@ public class FInicio extends Fragment{
                 while(tet != '0') {
                     if (!(progressBar.isShowing())){
                         ((MainActivity)getActivity()).send("Cancel");
+                        ///////////////////////////////////Make an AlertDialog in a new method
+                        Mess="Cancelado";
                         break;
                     }
 

@@ -69,12 +69,6 @@ public class MainActivity extends AppCompatActivity
 
 
 
-        //TextView statusView = (TextView)findViewById(R.id.status);
-        //Button prender = (Button)findViewById(R.id.prender);
-
-        //final View roundButton = (View)findViewById(R.id.roundButton);
-
-        //statusView.setText("Connecting to " + deviceName);
         new ConnectBT().execute();
 
 
