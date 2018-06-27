@@ -2,6 +2,7 @@ package com.example.usuario.prueba;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
@@ -90,6 +91,7 @@ public class FInicio extends Fragment{
             {
                 // do the thing that takes a long time
                 ((MainActivity)getActivity()).send(data);
+                //This delay is to receive the data and refresh it buffer
                 try {
                     Thread.sleep(500);
                 } catch (InterruptedException e) {
@@ -98,11 +100,17 @@ public class FInicio extends Fragment{
                 Mess=((MainActivity)getActivity()).messageComplete;  //Obtener una variable desde el Activity
                 char tet = Mess.charAt(0);
                 Log.e(TAG,"tes"+tet);
-                while(tet != '0') {
+                while(tet != '2') {
                     if (!(progressBar.isShowing())){
                         ((MainActivity)getActivity()).send("Cancel");
                         ///////////////////////////////////Make an AlertDialog in a new method
                         Mess="Cancelado";
+                        break;
+                    }
+                    if (Mess.equals("01")){ //Error en plataforma
+                        break;
+                    }
+                    if (Mess.equals("10")){ //Error en plataforma
                         break;
                     }
 
@@ -111,20 +119,25 @@ public class FInicio extends Fragment{
                     }catch (NullPointerException e){ //Necessary because when turn off the server BT, appear and NullPointerException
 
                     }
+
                     tet = Mess.charAt(0);
 
-                }
-                  /*try {
-                      ((MainActivity)getActivity()).receive();
-                  } catch (IOException e) {
-                      e.printStackTrace();
-                  }*/
 
+                }
+                Log.e(TAG,"tes"+Mess);
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run()
                     {
-
+                        if (Mess.equals("01")){ //When the user Cancel the process, will appear a message
+                            Toast.makeText((getActivity()),"Error: Se ha levantado el pie",Toast.LENGTH_LONG).show();
+                        }
+                        if (Mess.equals("10")){ //When the user Cancel the process, will appear a message
+                            Toast.makeText((getActivity()),"Error: Se ha movido el brazo",Toast.LENGTH_LONG).show();
+                        }
+                        if (Mess=="Cancelado"){ //When the user Cancel the process, will appear a message
+                            Toast.makeText((getActivity()),"You are cancelled the process",Toast.LENGTH_LONG).show();
+                        }
                         Log.e(TAG,"te1"+Mess);
                         tv.setText(Mess);
                         progressBar.dismiss();

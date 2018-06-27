@@ -125,11 +125,11 @@ public class MainActivity extends AppCompatActivity
             readMessage = new String(buffer, 0, bytes); //Se crea la variable global para poder acceder desde cualquier fragment
             messageComplete = readMessage.trim();               //Quitamos todos los espacios al inicio del string
             Log.e(TAG,"recibido"+readMessage);
-            try {
+/*            try {
                 Thread.sleep(500);
             } catch (InterruptedException e) {
                 e.printStackTrace();
-            }
+            }*/
 /*           if(messageComplete.length()!=10){                   //Se verifica que el total de datos sea el correcto
                 //send("1");                                      //La información llegó incompleta
             }
@@ -149,7 +149,7 @@ public class MainActivity extends AppCompatActivity
                 //msg("Error");
             }
         }
-        Toast.makeText(getApplicationContext(),"Disconnected"+dat,Toast.LENGTH_LONG).show();
+        //Toast.makeText(getApplicationContext(),"Disconnected"+dat,Toast.LENGTH_LONG).show();
         Toast.makeText(getApplicationContext(),"Disconnected",Toast.LENGTH_LONG).show();
         finish();
     }
