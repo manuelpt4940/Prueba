@@ -81,7 +81,7 @@ public class FInicio extends Fragment{
 
     public void Enviar(final String data, String title) {
         progressBar = ProgressDialog.show(getActivity(), title, "Please wait...");  //show a progress dialog
-        progressBar.setCanceledOnTouchOutside(true);
+        progressBar.setCanceledOnTouchOutside(true);   //Habilitar la opción de cancelar al oprimir por fuera
 
 
         new Thread(new Runnable() {
@@ -97,6 +97,7 @@ public class FInicio extends Fragment{
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
+                Mess=null;
                 Mess=((MainActivity)getActivity()).messageComplete;  //Obtener una variable desde el Activity
                 char tet = Mess.charAt(0);
                 Log.e(TAG,"tes"+tet);
@@ -132,12 +133,20 @@ public class FInicio extends Fragment{
                         if (Mess.equals("01")){ //When the user Cancel the process, will appear a message
                             Toast.makeText((getActivity()),"Error: Se ha levantado el pie",Toast.LENGTH_LONG).show();
                         }
-                        if (Mess.equals("10")){ //When the user Cancel the process, will appear a message
-                            Toast.makeText((getActivity()),"Error: Se ha movido el brazo",Toast.LENGTH_LONG).show();
+                        else{
+                            if (Mess.equals("10")){ //When the user Cancel the process, will appear a message
+                                Toast.makeText((getActivity()),"Error: Se ha movido el brazo",Toast.LENGTH_LONG).show();
+                            }
+                            else{
+                                if (Mess=="Cancelado"){ //When the user Cancel the process, will appear a message
+                                    Toast.makeText((getActivity()),"You are cancelled the process",Toast.LENGTH_LONG).show();
+                                }
+                                else{
+                                    Toast.makeText((getActivity()),"Process execute successfully.",Toast.LENGTH_LONG).show();
+                                }
+                            }
                         }
-                        if (Mess=="Cancelado"){ //When the user Cancel the process, will appear a message
-                            Toast.makeText((getActivity()),"You are cancelled the process",Toast.LENGTH_LONG).show();
-                        }
+
                         Log.e(TAG,"te1"+Mess);
                         tv.setText(Mess);
                         progressBar.dismiss();
