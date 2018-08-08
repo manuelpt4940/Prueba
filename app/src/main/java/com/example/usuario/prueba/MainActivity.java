@@ -122,7 +122,7 @@ public class MainActivity extends AppCompatActivity
         readMessage="";
         //while((messageComplete.length()!=10)){
         while((bytes = mmInputStream.read(buffer)) != -1) {
-            readMessage="";
+            readMessage=null;
             readMessage = new String(buffer, 0, bytes); //Se crea la variable global para poder acceder desde cualquier fragment
             messageComplete = readMessage.trim();               //Quitamos todos los espacios al inicio del string
             Log.e(TAG,"recibido"+readMessage);

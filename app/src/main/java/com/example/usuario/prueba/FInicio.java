@@ -116,6 +116,7 @@ public class FInicio extends Fragment{
                     }
 
                     try {
+                        Mess=null;
                         Mess = ((MainActivity) getActivity()).messageComplete;
                     }catch (NullPointerException e){ //Necessary because when turn off the server BT, appear and NullPointerException
 
