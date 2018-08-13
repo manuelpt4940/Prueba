@@ -3,6 +3,7 @@ package com.example.usuario.prueba;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
@@ -11,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,8 +33,11 @@ import static android.content.ContentValues.TAG;
 public class FInicio extends Fragment{
     Button button, button2;
     TextView tv;
-    private ProgressDialog progressBar;
-    private AlertDialog.Builder alertDialog;
+    ProgressDialog progressBar;
+    String Mess;
+    AlertDialog.Builder alert_Process;
+    AlertDialog alert;
+
 
 
     @Override
@@ -53,7 +58,10 @@ public class FInicio extends Fragment{
 
         //progressBar = view.findViewById(R.id.progressBar);
         progressBar = new ProgressDialog(getActivity());
-        alertDialog = new AlertDialog.Builder(getActivity());
+        progressBar.setIcon(R.drawable.ic_menu_share);
+        progressBar.setCancelable(false);
+        //Code to put a cancel button an avoid cancelled immediately
+        progressBar.setButton(DialogInterface.BUTTON_NEGATIVE,"Cancel",(DialogInterface.OnClickListener) null);
 
 
         button.setOnClickListener(new View.OnClickListener(){
@@ -73,6 +81,8 @@ public class FInicio extends Fragment{
         });
 
 
+
+
         return view;
     }
 
@@ -80,12 +90,39 @@ public class FInicio extends Fragment{
 
 
     public void Enviar(final String data, String title) {
-        progressBar = ProgressDialog.show(getActivity(), title, "Please wait...");  //show a progress dialog
-        progressBar.setCanceledOnTouchOutside(true);   //Habilitar la opción de cancelar al oprimir por fuera
+        progressBar.show();//(getActivity(), title, "Please wait...");  //show a progress dialog
+
+        //This section must be after progressBar.show******************************
+        progressBar.getButton(DialogInterface.BUTTON_NEGATIVE).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                alert_Process = new AlertDialog.Builder(getActivity());
+                alert_Process.setMessage("Do you want Cancel process?")
+                        .setCancelable(false)
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                progressBar.dismiss();
+
+                            }
+                        })
+                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.cancel();
+                            }
+                        });
+                alert = alert_Process.create();
+                alert.setTitle("ALERT!");
+                alert.show();
+            }
+        });
+        //*****************************************************************
+        //progressBar.setCanceledOnTouchOutside(true);   //Habilitar la opción de cancelar al oprimir por fuera
 
 
         new Thread(new Runnable() {
-            String Mess;
+
             @Override
             public void run()
             {
@@ -108,6 +145,7 @@ public class FInicio extends Fragment{
                         Mess="Cancelado";
                         break;
                     }
+
                     if (Mess.equals("01")){ //Error en plataforma
                         break;
                     }
@@ -150,6 +188,7 @@ public class FInicio extends Fragment{
 
                         Log.e(TAG,"te1"+Mess);
                         tv.setText(Mess);
+                        alert.dismiss(); //When process finish, and I have alert showing, automatically it is closed.
                         progressBar.dismiss();
 
                     }
