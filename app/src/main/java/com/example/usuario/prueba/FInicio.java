@@ -76,7 +76,13 @@ public class FInicio extends Fragment{
         {
             @Override
             public void onClick(View v) {
-                Enviar("Hola2", "Enviando2");
+                //Se busca el Enum a partir del int Número
+                ESPPB_events type = ESPPB_events.fromInt(3);
+                //Se busca el Mensaje a partir del Enum obtenido anteriormente
+                String Mensaje = ESPPB_events.valueOf(type.toString()).getStringMessage();
+                //Se muestra
+                System.out.println(type);
+                System.out.println(Mensaje);
             }
         });
 
@@ -188,7 +194,9 @@ public class FInicio extends Fragment{
 
                         Log.e(TAG,"te1"+Mess);
                         tv.setText(Mess);
-                        alert.dismiss(); //When process finish, and I have alert showing, automatically it is closed.
+                        if (alert!=null) {
+                            alert.dismiss(); //When process finish, and I have alert showing, automatically it is closed.
+                        }
                         progressBar.dismiss();
 
                     }
