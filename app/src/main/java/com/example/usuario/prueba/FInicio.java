@@ -76,13 +76,14 @@ public class FInicio extends Fragment{
         {
             @Override
             public void onClick(View v) {
-                //Se busca el Enum a partir del int Número
+                /*//Se busca el Enum a partir del int Número
                 ESPPB_events type = ESPPB_events.fromInt(3);
                 //Se busca el Mensaje a partir del Enum obtenido anteriormente
                 String Mensaje = ESPPB_events.valueOf(type.toString()).getStringMessage();
                 //Se muestra
                 System.out.println(type);
-                System.out.println(Mensaje);
+                System.out.println(Mensaje);*/
+                Enviar1("Hola2");
             }
         });
 
@@ -170,6 +171,7 @@ public class FInicio extends Fragment{
 
 
                 }
+                final int Tet=Integer.parseInt(String.valueOf(tet)); //Se convierte el char tet en int para buscar en el archivo enum
                 Log.e(TAG,"tes"+Mess);
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
@@ -188,6 +190,13 @@ public class FInicio extends Fragment{
                                 }
                                 else{
                                     Toast.makeText((getActivity()),"Process execute successfully.",Toast.LENGTH_LONG).show();
+                                    //Se busca el Enum a partir del int Número
+                                    ESPPB_events type = ESPPB_events.fromInt(Tet);
+                                    //Se busca el Mensaje a partir del Enum obtenido anteriormente
+                                    String Mensaje = ESPPB_events.valueOf(type.toString()).getStringMessage();
+                                    //Se muestra
+                                    System.out.println(type);
+                                    System.out.println(Mensaje);
                                 }
                             }
                         }
@@ -199,6 +208,78 @@ public class FInicio extends Fragment{
                         }
                         progressBar.dismiss();
 
+                    }
+                });
+            }
+        }).start();
+    }
+
+    public void Enviar1(final String data) {
+        progressBar.show();//(getActivity(), title, "Please wait...");  //show a progress dialog
+        //This section must be after progressBar.show******************************
+        progressBar.getButton(DialogInterface.BUTTON_NEGATIVE).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                alert_Process = new AlertDialog.Builder(getActivity());
+                alert_Process.setMessage("Do you want Cancel process?")
+                        .setCancelable(false)
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                progressBar.dismiss();
+                            }
+                        })
+                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.cancel();
+                            }
+                        });
+                alert = alert_Process.create();
+                alert.setTitle("ALERT!");
+                alert.show();
+            }
+        });
+
+        new Thread(new Runnable() {
+
+            @Override
+            public void run() {
+                // do the thing that takes a long time
+                ((MainActivity)getActivity()).send(data);
+                //This delay is to receive the data and refresh it buffer
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                String [] informacion;
+                while(true) { //Este ciclo se repetirá hasta que el celular reciba un mensaje, que para este caso es el de AF1
+                    Mess=null;
+                    Mess=((MainActivity)getActivity()).messageComplete;  //Obtener una variable desde el Activity
+                    informacion = Mess.split("-"); //Se separa el mensaje conrespecto al caractér -
+                    if (informacion[0].equals("AF1")){
+                        break;
+                    }
+                }
+                Log.e(TAG,"te2:"+informacion[0]);
+                Log.e(TAG,"te2:"+informacion[1]);
+                if (informacion[1].equals("0")){
+                    Log.e(TAG,"Distancia:"+informacion[2]);
+                }else{
+                    //Se busca el Enum a partir del int Número
+                    ESPPB_events type = ESPPB_events.fromInt(Integer.parseInt(String.valueOf(informacion[1])));
+                    //Se busca el Mensaje a partir del Enum obtenido anteriormente
+                    String Mensaje = ESPPB_events.valueOf(type.toString()).getStringMessage();
+                    System.out.println(Mensaje);
+                }
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (alert!=null) {
+                            alert.dismiss(); //When process finish, and I have alert showing, automatically it is closed.
+                        }
+                        progressBar.dismiss();
                     }
                 });
             }

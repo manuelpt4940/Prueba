@@ -21,13 +21,13 @@ public enum ESPPB_events {
     EQ_FootRise(3,"Se ha levantado el pie"),
 
     //Velocidad de la Marcha
-    VM_OutMeasureRegion(4, ""),
-    VM_WronginitialPosition(5,""),
+    VM_OutMeasureRegion(4, "Se ha salido de la región de medición"),
+    VM_WronginitialPosition(5,"Posicional inicial incorrecta"),
 
     //Incorporarse de una Silla
-    IDS_FootRise(6,"Se ha levantado el pie"),
-    IDS_ArmOutPosition(7,"Se ha perdido la posición del brazo"),
-    IDS_WrongChairPosition(8,"Posición incorrecta en la silla"),
+    IS_FootRise(6,"Se ha levantado el pie"),
+    IS_ArmOutPosition(7,"Se ha perdido la posición del brazo"),
+    IS_WrongChairPosition(8,"Posición incorrecta en la silla"),
 
 
     //Errores en Dispositivos
