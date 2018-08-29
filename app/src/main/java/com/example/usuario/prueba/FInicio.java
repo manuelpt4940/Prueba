@@ -37,6 +37,7 @@ public class FInicio extends Fragment{
     String Mess;
     AlertDialog.Builder alert_Process;
     AlertDialog alert;
+    Boolean Cancelado;
 
 
 
@@ -218,6 +219,7 @@ public class FInicio extends Fragment{
 
     public void Enviar1(final String data) {
         progressBar.show();//(getActivity(), title, "Please wait...");  //show a progress dialog
+        Cancelado=false;
         //This section must be after progressBar.show******************************
         progressBar.getButton(DialogInterface.BUTTON_NEGATIVE).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -229,6 +231,7 @@ public class FInicio extends Fragment{
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 progressBar.dismiss();
+                                Cancelado = true;
                             }
                         })
                         .setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -243,43 +246,55 @@ public class FInicio extends Fragment{
             }
         });
         new Thread(new Runnable() {
-
+            String [] informacion;
             @Override
             public void run() {
+
                 // do the thing that takes a long time
                 ((MainActivity)getActivity()).send(data);
                 //This delay is to receive the data and refresh it buffer
                 try {
-                    Thread.sleep(500);
+                    Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                String [] informacion;
+                Mess="  ";
                 while(true) { //Este ciclo se repetirá hasta que el celular reciba un mensaje, que para este caso es el de AF1
-                    Mess=null;
+                    Mess="  ";
                     Mess=((MainActivity)getActivity()).messageComplete;  //Obtener una variable desde el Activity
-                    informacion = Mess.split("-"); //Se separa el mensaje conrespecto al caractér -
+                    informacion = Mess.split("-"); //Se separa el mensaje con respecto al caractér -
                     if (informacion[0].equals("AF1")){
+                        Log.e(TAG,"te2:"+informacion[0]);
+                        Log.e(TAG,"te2:"+informacion[1]);
+                        break;
+                    }
+                    if(Cancelado){
+                        ((MainActivity)getActivity()).send("Cancelar");
                         break;
                     }
                 }
-                Log.e(TAG,"te2:"+informacion[0]);
-                Log.e(TAG,"te2:"+informacion[1]);
-                if (informacion[1].equals("0")){
-                    Log.e(TAG,"Distancia:"+informacion[2]);
-                    //De esa manera se concatena strings para el setText, pero se debe crear una linea en el archivo String
-                    tv3.setText(getString(R.string.distancia_Finicio,informacion[2]));
-                }else{
-                    //Se busca el Enum a partir del int Número
-                    ESPPB_events type = ESPPB_events.fromInt(Integer.parseInt(String.valueOf(informacion[1])));
-                    //Se busca el Mensaje a partir del Enum obtenido anteriormente
-                    String Mensaje = ESPPB_events.valueOf(type.toString()).getStringMessage();
-                    System.out.println(Mensaje);
-                    tv2.setText(getString(R.string.errores_Finicio,Mensaje));
-                }
+
+
+                //Only the main Thread can modify its view. runOnUiThread is run the main thread to modify the view
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        if (Cancelado){
+                            tv2.setText("Cancelado");
+                        }else {
+                            if (informacion[1].equals("0")) {
+                                Log.e(TAG, "Distancia:" + informacion[2]);
+                                //De esa manera se concatena strings para el setText, pero se debe crear una linea en el archivo String
+                                tv3.setText(getString(R.string.distancia_Finicio, informacion[2]));
+                            } else {
+                                //Se busca el Enum a partir del int Número
+                                ESPPB_events type = ESPPB_events.fromInt(Integer.parseInt(String.valueOf(informacion[1])));
+                                //Se busca el Mensaje a partir del Enum obtenido anteriormente
+                                String Mensaje = ESPPB_events.valueOf(type.toString()).getStringMessage();
+                                System.out.println(Mensaje);
+                                tv2.setText(getString(R.string.errores_Finicio, Mensaje));
+                            }
+                        }
                         if (alert!=null) {
                             alert.dismiss(); //When process finish, and I have alert showing, automatically it is closed.
                         }

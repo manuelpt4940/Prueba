@@ -119,25 +119,13 @@ public class MainActivity extends AppCompatActivity
     @SuppressLint("LongLogTag")
     public void receive() throws IOException {
         mmInputStream = btSocket.getInputStream();
-        readMessage="";
+        readMessage="  ";
         //while((messageComplete.length()!=10)){
         while((bytes = mmInputStream.read(buffer)) != -1) {
-            readMessage=null;
+            readMessage="  ";
             readMessage = new String(buffer, 0, bytes); //Se crea la variable global para poder acceder desde cualquier fragment
             messageComplete = readMessage.trim();               //Quitamos todos los espacios al inicio del string
             Log.e(TAG,"recibido"+readMessage);
-/*            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }*/
-/*           if(messageComplete.length()!=10){                   //Se verifica que el total de datos sea el correcto
-                //send("1");                                      //La información llegó incompleta
-            }
-            else {
-                send("0");                                      //La información llegó completa
-                break;
-            }*/
         }
     }
 
