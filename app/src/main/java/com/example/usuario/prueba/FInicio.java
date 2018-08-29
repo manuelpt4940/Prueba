@@ -32,7 +32,7 @@ import static android.content.ContentValues.TAG;
  */
 public class FInicio extends Fragment{
     Button button, button2;
-    TextView tv;
+    TextView tv, tv2,tv3;
     ProgressDialog progressBar;
     String Mess;
     AlertDialog.Builder alert_Process;
@@ -54,6 +54,8 @@ public class FInicio extends Fragment{
         // Inflate the layout for this fragment
         button = view.findViewById(R.id.butt);
         tv = view.findViewById(R.id.tv1);
+        tv2 = view.findViewById(R.id.textView2);
+        tv3 = view.findViewById(R.id.textView3);
         button2 = view.findViewById(R.id.button2);
 
         //progressBar = view.findViewById(R.id.progressBar);
@@ -240,7 +242,6 @@ public class FInicio extends Fragment{
                 alert.show();
             }
         });
-
         new Thread(new Runnable() {
 
             @Override
@@ -266,12 +267,15 @@ public class FInicio extends Fragment{
                 Log.e(TAG,"te2:"+informacion[1]);
                 if (informacion[1].equals("0")){
                     Log.e(TAG,"Distancia:"+informacion[2]);
+                    //De esa manera se concatena strings para el setText, pero se debe crear una linea en el archivo String
+                    tv3.setText(getString(R.string.distancia_Finicio,informacion[2]));
                 }else{
                     //Se busca el Enum a partir del int Número
                     ESPPB_events type = ESPPB_events.fromInt(Integer.parseInt(String.valueOf(informacion[1])));
                     //Se busca el Mensaje a partir del Enum obtenido anteriormente
                     String Mensaje = ESPPB_events.valueOf(type.toString()).getStringMessage();
                     System.out.println(Mensaje);
+                    tv2.setText(getString(R.string.errores_Finicio,Mensaje));
                 }
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
